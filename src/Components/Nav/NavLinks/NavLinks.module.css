@@ -1,0 +1,21 @@
+.header li {
+    margin: 0 1rem;
+    width: 5rem;
+}
+
+.header nav {
+    height: 100%;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+}
+
+.header a:hover,
+.header a:active,
+.header a.active {
+    color: #95bcf0;
+    padding-bottom: 0.25rem;
+    border-bottom: 4px solid #95bcf0;
+}

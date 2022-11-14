@@ -1,0 +1,4 @@
+key = "AIzaSyDJA14tzz-jwI5s5VbaYwECkPfhfVj0RI8"
+LOGIN = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDJA14tzz-jwI5s5VbaYwECkPfhfVj0RI8/"
+REGISTER = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDJA14tzz-jwI5s5VbaYwECkPfhfVj0RI8/"
+CHANGEPASSWORD = "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDJA14tzz-jwI5s5VbaYwECkPfhfVj0RI8/"
