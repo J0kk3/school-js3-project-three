@@ -1,8 +1,6 @@
 //styles
 import './Modal.css';
 
-//TODO add three birthday fields instead of one date field
-
 const Modal = ( props ) =>
 {
     return (
@@ -21,3 +19,23 @@ const Modal = ( props ) =>
 };
 
 export default Modal;
+
+// //styles
+// import './Modal.css';
+
+// const Modal = ( props ) =>
+// {
+
+//     return (
+//         <div className="Modal">
+//             <h1>{ props.title }</h1>
+//             <p>{ props.message }</p>
+//             <button className="Button" onClick={ props.closeModal }>
+//                 Dismiss
+//             </button>
+//         </div>
+//     );
+
+// };
+
+// export default Modal;

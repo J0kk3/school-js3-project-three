@@ -1,22 +1,42 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 //hooks
-import { useRef, useContext } from "react";
-//components
-import AuthContext from "../../Store/auth-context";
+import { useRef, useState, useEffect } from "react";
 
 const AddMovie = () =>
 {
-    const authCtx = useContext( AuthContext );
-
     const navigate = useNavigate();
-    const location = useLocation();
 
     const titleInputRef = useRef();
     const shortDescriptionInputRef = useRef();
     const detailedDescriptionInputRef = useRef();
     const imgURLInputRef = useRef();
 
-    // const movieArr = [ {} ];
+    const [ user, setUser ] = useState();
+
+    useEffect( () =>
+    {
+        let userName;
+        fetch( "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDJA14tzz-jwI5s5VbaYwECkPfhfVj0RI8",
+            {
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        // idToken: authCtx.tokenData,
+                        idToken: localStorage.getItem( "token" ),
+                    } ),
+                headers:
+                {
+                    "Content-Type": "application/json"
+                },
+            } ).then( ( res ) =>
+            {
+                res.json().then( ( data ) =>
+                {
+                    userName = data.users[ 0 ].email;
+                    setUser( userName );
+                } );
+            } );
+    }, [] );
 
     const SubmitMovieHandler = e =>
     {
@@ -33,27 +53,10 @@ const AddMovie = () =>
             shortDescription: enteredShortDescription,
             detailedDescription: enteredDetailedDescription,
             imgURL: enteredImgURL,
-            user: authCtx.userId
+            user: user,
         };
-
-        const movies = location.state.movies;
-        // movies.push( localStorage.SetItem( "movieArr", JSON.stringify( movieArr ) ) );
-        localStorage.SetItem( "movieArr", JSON.stringify( movieData ) );
-        movies.push( movieData );
-        navigate( "/movies", { state: { movies: movies } } );
-
-        // movieArr.push( { ...movieData } );
-        //save movieArr to local storage
-        // localStorage.setItem( "movieArr", JSON.stringify( movieArr ) );
-
-        //reset all fields
-        titleInputRef.current.value = "";
-        shortDescriptionInputRef.current.value = "";
-        detailedDescriptionInputRef.current.value = "";
-        imgURLInputRef.current.value = "";
-
         //Redirect to /movies
-        navigate( "/movies", { replace: true } );
+        navigate( "/movies", { state: { movieData } } );
     };
 
     return (

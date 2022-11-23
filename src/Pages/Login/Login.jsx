@@ -1,9 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
-// import { Navigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 //hooks
 import { useState, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 //components
 import AuthContext from '../../Store/auth-context';
+import Modal from "../../Components/Modal/Modal";
+import Backdrop from "../../Components/Modal/Backdrop";
 
 const Login = () =>
 {
@@ -15,6 +17,20 @@ const Login = () =>
     const navigate = useNavigate();
 
     const [ isLoading, setIsLoading ] = useState( false );
+
+    const [ modalIsOpen, setModalIsOpen ] = useState( false );
+
+    const showModal = () =>
+    {
+        setModalIsOpen( true );
+    };
+
+    const closeModal = () =>
+    {
+        setModalIsOpen( false );
+    };
+
+    let modalMessage;
 
     const submitHandler = e =>
     {
@@ -50,10 +66,8 @@ const Login = () =>
                     return res.json().then( ( data ) =>
                     {
                         let errorMessage = "Authentication failed!";
-                        // if ( data && data.error && data.error.message )
-                        // {
-                        //     errorMessage = data.error.message;
-                        // }
+                        modalMessage = data.error.message;
+                        showModal();
                         throw new Error( errorMessage );
                     } );
                 }
@@ -65,11 +79,11 @@ const Login = () =>
                 );
                 authCtx.login( data.idToken, expirationTime.toISOString() );
                 //Redirect to homepage
-                // <Navigate to="/movies" />;
                 navigate( "/movies", { replace: true } );
             } ).catch( err =>
             {
-                alert( err.message );
+                modalMessage = err.message;
+                showModal();
             } );
     };
 
@@ -78,11 +92,11 @@ const Login = () =>
             <h1>Log In</h1>
             <form onSubmit={ submitHandler }>
                 <div>
-                    <label htmlFor="email">Your Email</label>
+                    <label htmlFor="email">Email</label>
                     <input type="email" id="email" placeholder="E-mail" required ref={ emailInputRef } />
                 </div>
                 <div>
-                    <label htmlFor="password">Your Password</label>
+                    <label htmlFor="password">Password</label>
                     <input type="password" id="password" placeholder="Pasword" required ref={ passwordInputRef } />
                 </div>
                 <div>
@@ -91,6 +105,8 @@ const Login = () =>
                     <Link to="">Forgot your password?</Link>
                 </div>
             </form>
+            { modalIsOpen && <Modal title={ "Login Failed" } message={ modalMessage } modalIsOpen={ modalIsOpen } showModal={ showModal } closeModal={ closeModal } /> }
+            { modalIsOpen ? ( <Backdrop show closeModal={ closeModal } /> ) : null }
         </section>
     );
 };

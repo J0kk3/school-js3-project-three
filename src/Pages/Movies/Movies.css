@@ -1,0 +1,11 @@
+.divWrapper {
+    /* display: flex;
+    flex-direction: column; */
+    margin: 1rem;
+    width: calc(45% - 2rem);
+    min-width: 17.5rem;
+}
+
+.divWrapper__content {
+    margin: 1.5rem 0;
+}

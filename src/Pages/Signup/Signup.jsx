@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { Navigate } from "react-router-dom";
 //components
 import AuthContext from "../../Store/auth-context";
+import Modal from "../../Components/Modal/Modal";
+import Backdrop from "../../Components/Modal/Backdrop";
 
 class Signup extends React.Component
 {
-    constructor ()
+    constructor()
     {
         super();
         this.emailInputRef = React.createRef();
@@ -18,13 +20,16 @@ class Signup extends React.Component
         };
     }
 
-    static authCtx = AuthContext;
+    // static authCtx = React.createContext(AuthContext);
+    static contextType = AuthContext;
+
+    modalMessage;
+    modalTitle = "Error";
 
     showModal = e =>
     {
-        e.preventDefault();
+        // e.preventDefault();
         this.setState( { modalIsOpen: true } );
-
     };
 
     closeModal = () =>
@@ -56,33 +61,39 @@ class Signup extends React.Component
                 },
             } ).then( ( res ) =>
             {
+                // console.log(res);
                 this.setState( { isLoading: false } );
                 if ( res.ok )
+            {
+                return res.json();
+            }
+            else
+            {
+                return res.json().then( ( data ) =>
                 {
-                    return res.json();
-                }
-                else
-                {
-                    return res.json().then( ( data ) =>
+                    let errorMessage = "Authentication failed!";
+                    if ( data && data.error && data.error.message )
                     {
-                        let errorMessage = "Authentication failed!";
-                        if ( data && data.error && data.error.message )
-                        {
-                            errorMessage = data.error.message;
-                        }
-                        throw new Error( errorMessage );
-                    } );
-                }
+                        errorMessage = data.error.message;
+                    }
+                    //TODO: SHOW ERROR MODAL
+                    throw new Error( errorMessage );
+                } );
+            }
             } ).then( data =>
             {
+                // console.log(data);
                 //SUCCESSFUL REQUEST & USER IS AUTHENTICATED
-                const expirationTime = new Date().getTime() + ( +data.expiresIn * 1000 );
-                this.authCtx.login( data.idToken, expirationTime.toISOString() );
-                //Redirect to homepage
-                <Navigate to="/movies" replace={ true } />;
+                    // const expirationTime = new Date( new Date().getTime() + ( +data.expiresIn * 1000 ) );
+                    // this.context.login( data.idToken, expirationTime.toISOString() );
+                    // this.props.history.replace( "/movies" );
+                    this.modalTitle = "Success";
+                    this.modalMessage = "Signup Successful!";
+                    this.showModal();
             } ).catch( err =>
             {
-                alert( err.message );
+                this.modalMessage = err.message;
+                this.showModal();
             } );
     };
 
@@ -93,12 +104,12 @@ class Signup extends React.Component
                 <h1>Sign Up</h1>
                 <form onSubmit={ this.submitHandler }>
                     <div>
-                        <label htmlFor="email">Your Email</label>
+                        <label htmlFor="email">Email</label>
                         <input type="email" id="email" placeholder="E-mail" required ref={ this.emailInputRef } />
                     </div>
                     <div>
-                        <label htmlFor="password">Your Password</label>
-                        <input type="password" id="password" placeholder="Pasword" required ref={ this.passwordInputRef } />
+                        <label htmlFor="password">Password (6 min)</label>
+                        <input type="password" id="password" placeholder="Pasword" min={ 6 } required ref={ this.passwordInputRef } />
                     </div>
                     <div>
                         { !this.isLoading && <button type="submit">Sign Up</button> }
@@ -106,6 +117,8 @@ class Signup extends React.Component
                         <Link to="">Forgot your password?</Link>
                     </div>
                 </form>
+                { this.state.modalIsOpen && <Modal title={ this.modalTitle } message={ this.modalMessage } modalIsOpen={ this.modalIsOpen } showModal={ this.showModal } closeModal={ this.closeModal } /> }
+                { this.state.modalIsOpen ? ( <Backdrop show closeModal={ this.closeModal } /> ) : null }
             </section>
         );
     }
